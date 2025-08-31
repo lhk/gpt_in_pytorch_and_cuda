@@ -19,4 +19,4 @@ Oh, and yes I did find some memory leaks, so the tests were helpful :)
 
 At this point I had reproduced the python code in CUDA with reasonable test coverage. Way back in a HPC course in my bachelor they told us "First do it, then do it right, then do it fast." I think now I've just about completed the "do it right" step. Next up I'll see if this can be sped up :) There's plenty of things to try,  `kernels.cu` don't use `__restrict__` for example, no tiling, no experiments with layout of the blocks/threads.
 
-At the time of this writing, based on very simple benchmarking, the CUDA code is roughly 2x faster than pytorch and generates 100 tokens in ~120ms vs ~250ms. (Recording prompt.py vs prompt.cu. Not at all a proper benchmark of course!)
+At the time of this writing, based on very simple benchmarking, the CUDA code is roughly 2x faster than pytorch and generates 100 tokens in ~120ms vs ~250ms. I hesitate to write this, because of course it's not a proper benchmark at all. In particular I would expect that the python inferencing loop is very inefficient. Maybe I should benchmark just a forward pass through the network? For now I'll leave it at this.
