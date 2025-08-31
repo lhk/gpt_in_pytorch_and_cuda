@@ -1,0 +1,20 @@
+# Compiled test executables
+modules_test
+kernels_test
+gpt_test
+
+# Object files and other build artifacts
+*.o
+*.obj
+*.so
+*.a
+
+# Temporary files
+*~
+*.tmp
+*.swp
+.DS_Store
+
+# Test output files (if any are generated)
+*.log
+*.out

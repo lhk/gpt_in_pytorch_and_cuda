@@ -1,0 +1,4 @@
+config_d_model=4
+config_n_heads=2
+config_d_ff=8
+config_max_seq_len=3

@@ -1,0 +1,2 @@
+config_d_model=4
+config_d_ff=8

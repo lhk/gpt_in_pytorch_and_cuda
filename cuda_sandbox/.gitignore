@@ -1,0 +1,34 @@
+# Compiled binaries
+matmul
+matmul_benchmark
+softmax
+softmax_benchmark
+mhsa
+gpt_sandbox
+
+# Object files
+*.o
+*.obj
+
+# CUDA compilation cache
+*.cubin
+*.ptx
+
+# Temporary files
+*.tmp
+*~
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

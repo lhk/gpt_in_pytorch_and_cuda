@@ -1,0 +1,37 @@
+# Main executables
+generate
+prompt
+
+# Test executables  
+gpt_test
+modules_test
+kernels_test
+memory_test
+modules_memory_test
+generate_new
+
+# Object files and libraries
+*.o
+*.obj
+*.so
+*.a
+*.lib
+
+# CUDA compilation artifacts
+*.cubin
+*.ptx
+*.fatbin
+
+# Temporary files
+*~
+*.tmp
+*.swp
+.DS_Store
+
+# Log and output files
+*.log
+*.out
+
+# Build directories (if any)
+build/
+dist/

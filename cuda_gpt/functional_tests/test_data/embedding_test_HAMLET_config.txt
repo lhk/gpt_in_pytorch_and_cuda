@@ -1,0 +1,4 @@
+config_d_model=4
+config_max_seq_len=10
+config_vocab_size=107
+seq_len=7

@@ -1,0 +1,19 @@
+# Compiled test executables
+test_*_memory
+test_cuda_memory_tracking
+
+# Alternative pattern-based approach (if you prefer):
+# test_*
+# !test_*.cu
+
+# Object files and other build artifacts
+*.o
+*.obj
+*.so
+*.a
+
+# Temporary files
+*~
+*.tmp
+*.swp
+.DS_Store
