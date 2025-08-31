@@ -1,0 +1,21 @@
+In this repository I'm experimenting with pure CUDA inference of custom-built pytorch models.
+
+To begin with I created a simple decoder-only language model built with pytorch. You can find the code in `/src`. I've trained it on a Shakespeare corpus with a simple character-level tokenizer.
+The results are ok-ish, when prompting, it does seem to speak English (just not very well...).
+You can test it for yourself by running `prompt.py` here in the project root. I've committed one trained checkpoint so you're ready to inference from the model. It's tempting to make the model better, but that's not the purpose of this project. The first milestone is just to have pretrained weights that I'll load for inferencing in my custom CUDA code.
+
+Then I started exploring CUDA kernels for the various blocks in the model. My goal was to understand how CUDA is working and to write the kernels without using large building blocks from CUDA libraries. The code is in `cuda_sandbox/`. I've experimented with simple matrix multiplication and softmax kernels then set up tiled versions of the kernels and a benchmark harness. After some fun with simple kernels, I moved to a full MultiHeadSelfAttention block. The code in `cuda_sandbox/mhsa.cu` was created in tandem with `src/models/gpt.py`. If you run `gpt.py` it logs debugging outputs and I assembled the CUDA code step by step to match the python ground-truth.
+
+After a successful re-implementation of mhsa in CUDA I created a new codebase, `cuda_gpt` where I created the full network in CUDA. I've tried to make this code cleaner:
+ - `kernels.cu` contains the raw building blocks. It has kernels for the various operations of the mhsa and mlp blocks.
+ - `modules.cu` contains CUDA versions of my pytorch `nn.Module` blocks. The modules combine individual kernels and are responsible for resource management
+ - `gpt.cu` has a full decoder-only network, composed from multiple blocks
+Additionally there is helper code like the `weight_loader.h` and a `prompt.cu` file that shows the final prompting setup.
+
+As for the proof-of-concept implementation in `cuda_sandbox/mhsa.cu` I followed a test-driven development approach. I dumped test data from the python codebase with a helper script `generate_test_data.py` (in the repository root) and then made sure that each building block matches exactly the output from the python reference. The logic for these tests is found in `cuda_gpt/functional_tests`. I've committed some binary files here, too, so it's easy to run the tests without having to re-execute python.  
+But even with the functional tests passing, I was wondering "is this code correct?". It would be nice to use Rust (and in fact I've experimented quite a bit with rust-gpu, but didn't get very far yet), then I would feel much more confident about the memory safety of this code. I've decided to set up another test suite in `cuda_gpt/memory_tests`. The host code is tested with Valgrind, for the device code I'm using a somewhat hacky solution: I'm recording the device memory usage before and after running through the test scenario. If all memory is freed correctly, these values should match. This is surely not production ready and the tests may be very flaky. But on my dev machine nothing else is running at the same time, and the test were reliable for me.
+Important disclaimer: I've tried to make the tests sharp, i.e. I've manually added/removed memory leaks in various forms on both host and device. The tests catch them. So I have some degree of trust, but I'm not an expert in Valgrind and certainly not in CUDA testing. If you have feedback, please let me know.
+
+At this point I had reproduced the python code in CUDA with reasonable test coverage. Way back in a HPC course in my bachelor they told us "First do it, then do it right, then do it fast." I think now I've just about completed the "do it right" step. Next up I'll see if this can be sped up :) There's plenty of things to try,  `kernels.cu` don't use `__restrict__` for example, no tiling, no experiments with layout of the blocks/threads.
+
+At the time of this writing, based on very simple benchmarking, the CUDA code is roughly 2x faster than pytorch and generates 100 tokens in ~120ms vs ~250ms. (Recording prompt.py vs prompt.cu. Not at all a proper benchmark of course!)
